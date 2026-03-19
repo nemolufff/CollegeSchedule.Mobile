@@ -48,6 +48,8 @@ class MainActivity : ComponentActivity() {
 @PreviewScreenSizes
 @Composable
 fun CollegeScheduleApp() {
+    var selectedGroup by rememberSaveable { mutableStateOf("") }
+
     var currentDestination by rememberSaveable {
         mutableStateOf(AppDestinations.HOME)
     }
@@ -81,7 +83,13 @@ fun CollegeScheduleApp() {
     ) {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             when (currentDestination) {
-                AppDestinations.HOME -> ScheduleScreen()
+
+                AppDestinations.HOME -> ScheduleScreen(
+                    selectedGroup = selectedGroup,
+                    onGroupSelected = { group ->
+                        selectedGroup = group
+                    }
+                )
 
                 AppDestinations.FAVORITES -> {
                     val context = LocalContext.current
@@ -91,6 +99,7 @@ fun CollegeScheduleApp() {
                     FavoritesScreen(
                         favorites = favorites,
                         onGroupClick = { group ->
+                            selectedGroup = group
                             currentDestination = AppDestinations.HOME
                         }
                     )

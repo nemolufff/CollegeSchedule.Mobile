@@ -18,7 +18,10 @@ import com.example.collegeschedule_romankov.ui.components.GroupDropdown
 import com.example.collegeschedule_romankov.utils.getWeekDateRange
 
 @Composable
-fun ScheduleScreen() {
+fun ScheduleScreen(
+    selectedGroup: String,
+    onGroupSelected: (String) -> Unit
+) {
     val context = LocalContext.current
     val favoritesRepository = remember { FavoritesRepository(context) }
 
@@ -28,7 +31,6 @@ fun ScheduleScreen() {
     var groups by remember {
         mutableStateOf<List<String>>(emptyList())
     }
-    var selectedGroup by remember { mutableStateOf("") }
     var loading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
     var isFavorite by remember { mutableStateOf(false) }
@@ -64,7 +66,7 @@ fun ScheduleScreen() {
             groups = groups,
             selectedGroup = selectedGroup,
             onGroupSelected = { group ->
-                selectedGroup = group
+                onGroupSelected(group)
             }
         )
 

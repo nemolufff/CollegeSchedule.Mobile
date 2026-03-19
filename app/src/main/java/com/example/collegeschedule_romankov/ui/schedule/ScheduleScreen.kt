@@ -1,6 +1,7 @@
 package com.example.collegeschedule_romankov.ui.schedule
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -9,13 +10,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import com.example.collegeschedule_romankov.data.dto.ScheduleByDateDto
 import com.example.collegeschedule_romankov.data.network.RetrofitInstance
+import com.example.collegeschedule_romankov.data.repository.FavoritesRepository
 import com.example.collegeschedule_romankov.ui.components.GroupDropdown
 import com.example.collegeschedule_romankov.utils.getWeekDateRange
 
 @Composable
 fun ScheduleScreen() {
+    val context = LocalContext.current
+    val favoritesRepository = remember { FavoritesRepository(context) }
+
     var schedule by remember {
         mutableStateOf<List<ScheduleByDateDto>>(emptyList())
     }
@@ -25,6 +31,7 @@ fun ScheduleScreen() {
     var selectedGroup by remember { mutableStateOf("") }
     var loading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
+    var isFavorite by remember { mutableStateOf(false) }
 
     LaunchedEffect(selectedGroup) {
         val (start, end) = getWeekDateRange()
@@ -39,8 +46,10 @@ fun ScheduleScreen() {
                     start,
                     end
                 )
+                isFavorite = favoritesRepository.isFavorite(selectedGroup)
             } else {
                 schedule = emptyList()
+                isFavorite = false
             }
 
         } catch (e: Exception) {
@@ -58,6 +67,22 @@ fun ScheduleScreen() {
                 selectedGroup = group
             }
         )
+
+        if (selectedGroup.isNotBlank()) {
+            Button(
+                onClick = {
+                    if (isFavorite) {
+                        favoritesRepository.removeFavorite(selectedGroup)
+                        isFavorite = false
+                    } else {
+                        favoritesRepository.addFavorite(selectedGroup)
+                        isFavorite = true
+                    }
+                }
+            ) {
+                Text(if (isFavorite) "Убрать из избранного" else "Добавить в избранное")
+            }
+        }
 
         when {
             loading -> CircularProgressIndicator()

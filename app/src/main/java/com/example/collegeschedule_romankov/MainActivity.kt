@@ -29,6 +29,9 @@ import com.example.collegeschedule_romankov.ui.schedule.ScheduleScreen
 import com.example.collegeschedule_romankov.ui.theme.CollegeScheduleTheme
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import androidx.compose.ui.platform.LocalContext
+import com.example.collegeschedule_romankov.data.repository.FavoritesRepository
+import com.example.collegeschedule_romankov.ui.schedule.FavoritesScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,13 +83,21 @@ fun CollegeScheduleApp() {
             when (currentDestination) {
                 AppDestinations.HOME -> ScheduleScreen()
 
-                AppDestinations.FAVORITES ->
-                    Text("Избранные группы", modifier =
-                        Modifier.padding(innerPadding))
+                AppDestinations.FAVORITES -> {
+                    val context = LocalContext.current
+                    val favoritesRepository = remember { FavoritesRepository(context) }
+                    val favorites = remember { favoritesRepository.getFavorites() }
+
+                    FavoritesScreen(
+                        favorites = favorites,
+                        onGroupClick = { group ->
+                            currentDestination = AppDestinations.HOME
+                        }
+                    )
+                }
 
                 AppDestinations.PROFILE ->
-                    Text("Профиль студента", modifier =
-                        Modifier.padding(innerPadding))
+                    Text("Профиль студента", modifier = Modifier.padding(innerPadding))
             }
         }
     }

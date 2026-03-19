@@ -1,6 +1,7 @@
 package com.example.collegeschedule_romankov.data.api
 
 import com.example.collegeschedule_romankov.data.dto.ScheduleByDateDto
+import com.example.collegeschedule_romankov.data.dto.GroupDto
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -13,4 +14,7 @@ interface ScheduleApi {
         @Query("start") start: String,
         @Query("end") end: String
     ): List<ScheduleByDateDto>
+
+    @GET("api/groups")
+    suspend fun getGroups(): List<GroupDto>
 }

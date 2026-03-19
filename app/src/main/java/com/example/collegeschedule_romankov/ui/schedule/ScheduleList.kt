@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.collegeschedule_romankov.data.dto.ScheduleByDateDto
+import androidx.compose.ui.graphics.Color
 
 @Composable
 fun ScheduleList(data: List<ScheduleByDateDto>) {
@@ -34,15 +35,43 @@ fun ScheduleList(data: List<ScheduleByDateDto>) {
                     Card(
                         modifier = Modifier
                             .padding(8.dp)
-                            .fillMaxWidth()
+                            .fillMaxWidth(),
+                        colors = androidx.compose.material3.CardDefaults.cardColors(
+                            containerColor = Color(0x330073B7)
+                        )
                     ) {
-                        Column(Modifier.padding(8.dp)) {
-                            Text("Пара ${lesson.lessonNumber} (${lesson.time})")
+                        Column(Modifier.padding(12.dp)) {
+
+                            Text(
+                                text = "Пара ${lesson.lessonNumber}",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+
+                            Text(
+                                text = lesson.time,
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+
                             lesson.groupParts.forEach { (part, info) ->
                                 if (info != null) {
-                                    Text("$part: ${info.subject}")
-                                    Text(info.teacher)
-                                    Text("${info.building}, ${info.classroom}")
+
+                                    Text(
+                                        text = "📚 ${info.subject}",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+
+                                    Text(
+                                        text = "👨‍🏫 ${info.teacher}",
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+
+                                    Text(
+                                        text = "📍 ${info.building}, ${info.classroom}",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        modifier = Modifier.padding(bottom = 8.dp)
+                                    )
                                 }
                             }
                         }

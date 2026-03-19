@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -21,17 +22,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import com.example.collegeschedule_romankov.data.api.ScheduleApi
+import com.example.collegeschedule_romankov.data.repository.FavoritesRepository
 import com.example.collegeschedule_romankov.data.repository.ScheduleRepository
+import com.example.collegeschedule_romankov.ui.schedule.FavoritesScreen
 import com.example.collegeschedule_romankov.ui.schedule.ScheduleScreen
 import com.example.collegeschedule_romankov.ui.theme.CollegeScheduleTheme
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import androidx.compose.ui.platform.LocalContext
-import com.example.collegeschedule_romankov.data.repository.FavoritesRepository
-import com.example.collegeschedule_romankov.ui.schedule.FavoritesScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,10 +73,24 @@ fun CollegeScheduleApp() {
                     icon = {
                         Icon(
                             it.icon,
-                            contentDescription = it.label
+                            contentDescription = it.label,
+                            tint = if (it == currentDestination) {
+                                Color(0xFF0073B7)
+                            } else {
+                                Color.Gray
+                            }
                         )
                     },
-                    label = { Text(it.label) },
+                    label = {
+                        Text(
+                            it.label,
+                            color = if (it == currentDestination) {
+                                Color(0xFF0073B7)
+                            } else {
+                                Color.Gray
+                            }
+                        )
+                    },
                     selected = it == currentDestination,
                     onClick = { currentDestination = it }
                 )
@@ -84,14 +100,20 @@ fun CollegeScheduleApp() {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             when (currentDestination) {
 
-                AppDestinations.HOME -> ScheduleScreen(
-                    selectedGroup = selectedGroup,
-                    onGroupSelected = { group ->
-                        selectedGroup = group
-                    }
-                )
+                AppDestinations.HOME -> Column(
+                    modifier = Modifier.padding(innerPadding)
+                ) {
+                    ScheduleScreen(
+                        selectedGroup = selectedGroup,
+                        onGroupSelected = { group ->
+                            selectedGroup = group
+                        }
+                    )
+                }
 
-                AppDestinations.FAVORITES -> {
+                AppDestinations.FAVORITES -> Column(
+                    modifier = Modifier.padding(innerPadding)
+                ) {
                     val context = LocalContext.current
                     val favoritesRepository = remember { FavoritesRepository(context) }
                     val favorites = remember { favoritesRepository.getFavorites() }
